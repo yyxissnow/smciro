@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package yyxissnow.smicro.request;
+
+option go_package = "github.com/yyxissnow/smicro/request";
+
+message PageRequest {
+  uint64 page_size = 1;
+  uint64 page_number = 2;
+  int64 offset = 3;
+}
