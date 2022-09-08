@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package yyxissnow.smicro.request;
 
-option go_package = "github.com/yyxissnow/smicro/request";
+option go_package = "github.com/yyxissnow/smicro/http/request";
 
 message PageRequest {
   uint64 page_size = 1;
