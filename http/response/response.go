@@ -2,7 +2,7 @@ package response
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/yyxissnow/smicro/ecode"
+	xerr "github.com/yyxissnow/smicro/app/err"
 	"net/http"
 )
 
@@ -29,14 +29,14 @@ type ListResponse struct {
 }
 
 func ResSuccess(c *gin.Context) {
-	c.JSON(http.StatusOK, SuccessResponse{Code: ecode.Success.Code()})
+	c.JSON(http.StatusOK, SuccessResponse{Code: xerr.Success.Code()})
 }
 
 func ResSuccessData(c *gin.Context, data interface{}) {
-	c.JSON(http.StatusOK, SuccessResponse{Code: ecode.Success.Code(), Data: data})
+	c.JSON(http.StatusOK, SuccessResponse{Code: xerr.Success.Code(), Data: data})
 }
 
 func ResError(c *gin.Context, err error) {
-	e := ecode.AnalyseError(err)
-	c.JSON(http.StatusOK, ErrorResponse{Code: e.Code(), Message: e.Message()})
+	e := xerr.AnalyseError(err)
+	c.JSON(http.StatusOK, ErrorResponse{Code: e.Code(), Message: e.UMessage()})
 }
