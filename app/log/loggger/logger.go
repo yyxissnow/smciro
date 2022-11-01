@@ -41,6 +41,10 @@ func NewDefault(c zapcore.Core, lvl zapcore.Level) *XLogger {
 	return &XLogger{log.Sugar()}
 }
 
+func (x *XLogger) Named(name string) *XLogger {
+	return &XLogger{x.sugar.Named(name)}
+}
+
 func (x *XLogger) Info(args ...interface{}) {
 	x.sugar.Info(args)
 }
