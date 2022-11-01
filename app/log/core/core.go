@@ -1,7 +1,6 @@
 package core
 
 import (
-	xlog "github.com/yyxissnow/smicro/app/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -26,7 +25,7 @@ func DefaultConsole(l zapcore.Level) zapcore.Core {
 	)
 }
 
-func DefaultFile(c *xlog.LumberJack, l zapcore.Level) zapcore.Core {
+func DefaultFile(c *LumberJack, l zapcore.Level) zapcore.Core {
 	return wrapXCore(zapcore.NewCore(
 		DefaultFileEncoder(),
 		zapcore.NewMultiWriteSyncer(zapcore.NewMultiWriteSyncer(XLogFileWriter(c))),
@@ -67,7 +66,7 @@ func (x *xCore) Sync() error {
 
 func hasStackErr(fields []zapcore.Field) bool {
 	for _, field := range fields {
-		if field.Key == xlog.Stacktrace {
+		if field.Key == Stacktrace {
 			return true
 		}
 	}
@@ -76,7 +75,7 @@ func hasStackErr(fields []zapcore.Field) bool {
 
 func getStacks(fields []zapcore.Field) (string, []zapcore.Field) {
 	for i, field := range fields {
-		if field.Key == xlog.Stacktrace {
+		if field.Key == Stacktrace {
 			fields = append(fields[:i], fields[i+1:]...)
 			return field.String, fields
 		}

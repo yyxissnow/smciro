@@ -1,4 +1,4 @@
-package xlog
+package core
 
 import (
 	"go.uber.org/zap/zapcore"

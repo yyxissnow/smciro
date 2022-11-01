@@ -3,7 +3,6 @@ package core
 import (
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"test/xlog_err/xlog"
 	"time"
 )
 
@@ -19,7 +18,7 @@ func DefaultConsoleEncoder() zapcore.Encoder {
 		EncodeCaller:     xCallerEncode,
 		EncodeDuration:   zapcore.NanosDurationEncoder,
 		EncodeTime:       xTimeEncoder,
-		ConsoleSeparator: xlog.ConsoleSeparator,
+		ConsoleSeparator: ConsoleSeparator,
 	})
 }
 
@@ -44,14 +43,14 @@ func xLevelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 }
 
 func xTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString("[" + t.Format(xlog.TimeEncoderFormat) + "]")
+	enc.AppendString("[" + t.Format(TimeEncoderFormat) + "]")
 }
 
 func xCallerEncode(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString("[" + caller.TrimmedPath() + "]   >>>")
 }
 
-func XLogFileWriter(c *xlog.LumberJack) zapcore.WriteSyncer {
+func XLogFileWriter(c *LumberJack) zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
 		Filename:   c.Filename,
 		MaxSize:    c.MaxSize,

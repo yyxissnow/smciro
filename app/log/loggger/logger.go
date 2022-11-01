@@ -3,7 +3,6 @@ package loggger
 import (
 	"fmt"
 	xerr "github.com/yyxissnow/smicro/app/err"
-	xlog "github.com/yyxissnow/smicro/app/log"
 	"github.com/yyxissnow/smicro/app/log/core"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -20,7 +19,7 @@ func New(c zapcore.Core, ops ...zap.Option) *XLogger {
 	return &XLogger{log.Sugar()}
 }
 
-func NewC(c *xlog.Config, ops ...zap.Option) *XLogger {
+func NewC(c *core.Config, ops ...zap.Option) *XLogger {
 	if c == nil || c.Common == nil {
 		return NewDefault(core.DefaultConsole(zapcore.InfoLevel), zapcore.ErrorLevel)
 	}
@@ -30,7 +29,7 @@ func NewC(c *xlog.Config, ops ...zap.Option) *XLogger {
 		cores = append(cores, zapcore.NewCore(core.DefaultConsoleEncoder(), core.XLogFileWriter(c.LumberJack), c.Common.FileLevel))
 	}
 	if c.Common.ConsoleStackInfo {
-		xlog.OpenConsoleStackInfo()
+		core.OpenConsoleStackInfo()
 	}
 	log := zap.New(core.NewCores(cores...))
 	log.WithOptions(ops...)
@@ -38,7 +37,7 @@ func NewC(c *xlog.Config, ops ...zap.Option) *XLogger {
 }
 
 func NewDefault(c zapcore.Core, lvl zapcore.Level) *XLogger {
-	log := zap.New(c, zap.AddCallerSkip(xlog.CallerSkip), zap.AddStacktrace(lvl))
+	log := zap.New(c, zap.AddCallerSkip(core.CallerSkip), zap.AddStacktrace(lvl))
 	return &XLogger{log.Sugar()}
 }
 
@@ -67,9 +66,9 @@ func (x *XLogger) Errorf(format string, args ...interface{}) {
 }
 
 func (x *XLogger) XError(err *xerr.XError) {
-	if xlog.GetConsoleStack() {
-		x.sugar.Errorw(fmt.Sprintf("%+v", err.Err()), xlog.Stacktrace, fmt.Sprintf("%+v", err.Err()))
+	if core.GetConsoleStack() {
+		x.sugar.Errorw(fmt.Sprintf("%+v", err.Err()), core.Stacktrace, fmt.Sprintf("%+v", err.Err()))
 		return
 	}
-	x.sugar.Errorw(err.Err().Error(), xlog.Stacktrace, fmt.Sprintf("%+v", err.Err()))
+	x.sugar.Errorw(err.Err().Error(), core.Stacktrace, fmt.Sprintf("%+v", err.Err()))
 }
