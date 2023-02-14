@@ -1,14 +1,18 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type Handler struct {
 	R *gin.RouterGroup
 }
 
 type Method struct {
-	Middlewares      []gin.HandlerFunc
-	LogRecordFormats []LogRecordFormat
+	Middlewares []gin.HandlerFunc
+	RecordLog   RecordLog
 }
 
 type Option interface {
@@ -27,9 +31,9 @@ func WithMiddleware(middlewares ...gin.HandlerFunc) Option {
 	})
 }
 
-func WithLogRecord(formats []LogRecordFormat) Option {
+func WithLogRecord(log RecordLog) Option {
 	return optionFunc(func(method *Method) {
-		method.LogRecordFormats = formats
+		method.RecordLog = log
 	})
 }
 
@@ -51,36 +55,44 @@ func (a *Handler) Use(middlewares ...gin.HandlerFunc) {
 
 func (a *Handler) POST(path string, handle gin.HandlerFunc, ops ...Option) {
 	method := withOptions(ops...)
-	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.LogRecordFormats) })
+	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.RecordLog) })
 	a.R.POST(path, method.Middlewares...)
 }
 
 func (a *Handler) GET(path string, handle gin.HandlerFunc, ops ...Option) {
 	method := withOptions(ops...)
-	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.LogRecordFormats) })
+	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.RecordLog) })
 	a.R.GET(path, method.Middlewares...)
 }
 
 func (a *Handler) PUT(path string, handle gin.HandlerFunc, ops ...Option) {
 	method := withOptions(ops...)
-	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.LogRecordFormats) })
+	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.RecordLog) })
 	a.R.PUT(path, method.Middlewares...)
 }
 
 func (a *Handler) DELETE(path string, handle gin.HandlerFunc, ops ...Option) {
 	method := withOptions(ops...)
-	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.LogRecordFormats) })
+	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.RecordLog) })
 	a.R.DELETE(path, method.Middlewares...)
 }
 
 func (a *Handler) Any(path string, handle gin.HandlerFunc, ops ...Option) {
 	method := withOptions(ops...)
-	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.LogRecordFormats) })
+	method.Middlewares = append(method.Middlewares, func(c *gin.Context) { loader(c, handle, method.RecordLog) })
 	a.R.Any(path, method.Middlewares...)
 }
 
-func loader(c *gin.Context, handle gin.HandlerFunc, fs []LogRecordFormat) {
+func (a *Handler) StaticFS(relativePath string, fs http.FileSystem) {
+	a.R.StaticFS(relativePath, fs)
+}
+
+func (a *Handler) Static(relativePath, root string) {
+	a.R.Static(relativePath, root)
+}
+
+func loader(c *gin.Context, handle gin.HandlerFunc, log RecordLog) {
 	c.Set(LogRecordKey, map[string]interface{}{})
 	handle(c)
-	LogRecord(c, fs)
+	LogRecord(c, log)
 }

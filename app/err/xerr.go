@@ -5,80 +5,81 @@ import (
 )
 
 type XError struct {
-	code        int
-	userMessage string
-	err         error
+	code    int
+	message string
+	err     error
 }
 
 func NewX(code int, msg string) *XError {
 	return &XError{
-		code:        code,
-		userMessage: msg,
-		err:         unKnowErr,
+		code:    code,
+		message: msg,
+		err:     unKnowErr,
 	}
 }
 
-func New(msg string) error {
+func New(msg string) *XError {
 	return &XError{
 		code: unKnowErrCode,
 		err:  errors.New(msg),
 	}
 }
 
-func Errorf(format string, args ...interface{}) error {
+func Errorf(format string, args ...interface{}) *XError {
 	return &XError{
 		code: unKnowErrCode,
 		err:  errors.Errorf(format, args),
 	}
 }
 
-// XWithUMessage 中途记录前端信息
-func XWithUMessage(err error, msg string) error {
-	if e, ok := err.(*XError); ok {
-		e.userMessage = msg
-		return e
-	}
-	return NewX(unKnowErrCode, msg)
-}
-
-// XWithError 上层记录前端和堆栈信息
-func XWithError(x *XError, err error) *XError {
-	if e, ok := err.(*XError); ok && e.userMessage != "" {
-		x.userMessage = e.userMessage //保留底册的错误信息
+// WithError 底层错误码透传到上层
+func (x *XError) WithError(err error) {
+	if e, ok := err.(*XError); ok && e.code != unKnowErrCode {
+		x.code = e.code
+		x.message = e.message
 	}
 	x.err = err
-	return x
 }
 
-func XWithMessage(err error, msg string) error {
-	return errors.WithMessage(err, msg)
+func WithMessage(err error, msg string) {
+	if x, ok := err.(*XError); ok {
+		x.err = errors.WithMessage(x.err, msg)
+	}
 }
 
-func XWithMessagef(err error, format string, args ...interface{}) error {
-	return errors.WithMessagef(err, format, args)
+func XWithMessagef(err error, format string, args ...interface{}) {
+	if x, ok := err.(*XError); ok {
+		x.err = errors.WithMessagef(x.err, format, args...)
+	}
 }
 
-func XWrap(err error, message string) error {
-	return errors.Wrap(err, message)
+func Wrap(err error, message string) *XError {
+	return &XError{
+		code: unKnowErrCode,
+		err:  errors.Wrap(err, message),
+	}
 }
 
-func XWrapf(err error, format string, args ...interface{}) error {
-	return errors.Wrapf(err, format, args)
+func Wrapf(err error, format string, args ...interface{}) *XError {
+	return &XError{
+		code: unKnowErrCode,
+		err:  errors.Wrapf(err, format, args),
+	}
 }
 
 func (x *XError) Error() string {
 	if x.err != nil {
 		return x.err.Error()
 	}
-	return x.UMessage()
+	return x.Message()
 }
 
 func (x *XError) Code() int {
 	return x.code
 }
 
-func (x *XError) UMessage() string {
-	return x.userMessage
+func (x *XError) Message() string {
+	return x.message
 }
 
 func (x *XError) Err() error {
@@ -101,9 +102,9 @@ func AnalyseError(err error) *XError {
 	return errStringToXError(err.Error())
 }
 
-func errStringToXError(e string) *XError {
-	if e == "" {
+func errStringToXError(msg string) *XError {
+	if msg == "" {
 		return Success
 	}
-	return NewX(unKnowErrCode, e)
+	return NewX(unKnowErrCode, msg)
 }

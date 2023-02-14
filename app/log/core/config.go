@@ -1,9 +1,5 @@
 package core
 
-import (
-	"go.uber.org/zap/zapcore"
-)
-
 var consoleStackInfo = false //终端是否打印堆栈信息
 
 type Config struct {
@@ -12,9 +8,9 @@ type Config struct {
 }
 
 type Common struct {
-	ConsoleLevel     zapcore.Level
-	FileLevel        zapcore.Level
-	StackLevel       zapcore.Level
+	ConsoleLevel     XLoggerLevel
+	FileLevel        XLoggerLevel
+	StackLevel       XLoggerLevel
 	ConsoleStackInfo bool
 	IsSaveFile       bool
 }
@@ -46,9 +42,9 @@ func ChangeTimeEncoderFormat(format string) {
 func DefaultConfig() *Config {
 	return &Config{
 		Common: &Common{
-			ConsoleLevel:     zapcore.InfoLevel,
-			FileLevel:        zapcore.InfoLevel,
-			StackLevel:       zapcore.ErrorLevel,
+			ConsoleLevel:     InfoLevel,
+			FileLevel:        InfoLevel,
+			StackLevel:       ErrorLevel,
 			ConsoleStackInfo: false,
 			IsSaveFile:       false,
 		}}
