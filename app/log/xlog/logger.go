@@ -5,8 +5,9 @@ import (
 	"os"
 	"sync"
 
-	xerr "github.com/yyxissnow/smicro/app/err"
-	"github.com/yyxissnow/smicro/app/log/xcore"
+	xerr "smicro/app/err"
+	"smicro/app/log/xcore"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

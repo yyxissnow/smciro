@@ -1,4 +1,4 @@
-module github.com/yyxissnow/smicro
+module smicro
 
 go 1.18
 
