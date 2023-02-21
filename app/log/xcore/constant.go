@@ -1,4 +1,4 @@
-package core
+package xcore
 
 const (
 	// ConsoleSeparator 终端打印字段间隔

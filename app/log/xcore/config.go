@@ -1,4 +1,4 @@
-package core
+package xcore
 
 var consoleStackInfo = false //终端是否打印堆栈信息
 

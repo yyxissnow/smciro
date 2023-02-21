@@ -1,9 +1,10 @@
-package core
+package xcore
 
 import (
+	"os"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 )
 
 func NewCore(enc zapcore.Encoder, ws zapcore.WriteSyncer, lev zapcore.LevelEnabler) zapcore.Core {

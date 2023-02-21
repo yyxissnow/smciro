@@ -1,4 +1,4 @@
-package core
+package xcore
 
 import "go.uber.org/zap/zapcore"
 
@@ -11,6 +11,11 @@ const (
 	WarnLevel
 	InfoLevel
 	DebugLevel
+
+	ErrorLevelString = "error"
+	WarnLevelString  = "warn"
+	InfoLevelString  = "info"
+	DebugLevelSting  = "debug"
 )
 
 func TransformLevel(level XLoggerLevel) zapcore.Level {
@@ -22,6 +27,22 @@ func TransformLevel(level XLoggerLevel) zapcore.Level {
 	case InfoLevel:
 		Level = zapcore.InfoLevel
 	case DebugLevel:
+		Level = zapcore.DebugLevel
+	default:
+		Level = zapcore.InfoLevel
+	}
+	return Level
+}
+
+func TransformLevelString(level string) zapcore.Level {
+	switch level {
+	case ErrorLevelString:
+		Level = zapcore.ErrorLevel
+	case WarnLevelString:
+		Level = zapcore.WarnLevel
+	case InfoLevelString:
+		Level = zapcore.InfoLevel
+	case DebugLevelSting:
 		Level = zapcore.DebugLevel
 	default:
 		Level = zapcore.InfoLevel

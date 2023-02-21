@@ -1,9 +1,10 @@
-package core
+package xcore
 
 import (
+	"time"
+
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"time"
 )
 
 func DefaultConsoleEncoder() zapcore.Encoder {
