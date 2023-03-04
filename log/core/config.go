@@ -1,4 +1,4 @@
-package xcore
+package core
 
 var consoleStackInfo = false //终端是否打印堆栈信息
 
@@ -8,9 +8,9 @@ type Config struct {
 }
 
 type Common struct {
-	ConsoleLevel     XLoggerLevel
-	FileLevel        XLoggerLevel
-	StackLevel       XLoggerLevel
+	ConsoleLevel     LogLevel
+	FileLevel        LogLevel
+	StackLevel       LogLevel
 	ConsoleStackInfo bool
 	IsSaveFile       bool
 }

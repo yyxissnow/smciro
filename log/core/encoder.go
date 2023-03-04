@@ -1,4 +1,4 @@
-package xcore
+package core
 
 import (
 	"time"

@@ -1,48 +1,48 @@
-package xlog
+package logger
 
 import (
 	"fmt"
 	"os"
+	"smicro/log/core"
 	"sync"
 
 	xerr "smicro/app/err"
-	"smicro/app/log/xcore"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-var logger = &XLogger{}
+var logger = &Logger{}
 
-type XLogger struct {
+type Logger struct {
 	sugar *zap.SugaredLogger
 	once  sync.Once
 }
 
-func NewXLogger(c *xcore.Config) {
+func NewXLogger(c *core.Config) {
 	if c == nil || c.Common == nil {
 		logger.sugar = defaultXLogger()
 		return
 	}
 	cores := make([]zapcore.Core, 0)
-	cores = append(cores, zapcore.NewCore(xcore.DefaultConsoleEncoder(), zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)), xcore.TransformLevel(c.Common.ConsoleLevel)))
+	cores = append(cores, zapcore.NewCore(core.DefaultConsoleEncoder(), zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)), core.TransformLevel(c.Common.ConsoleLevel)))
 	if c.Common.IsSaveFile {
-		cores = append(cores, zapcore.NewCore(xcore.DefaultConsoleEncoder(), xcore.XLogFileWriter(c.LumberJack), xcore.TransformLevel(c.Common.FileLevel)))
+		cores = append(cores, zapcore.NewCore(core.DefaultConsoleEncoder(), core.XLogFileWriter(c.LumberJack), core.TransformLevel(c.Common.FileLevel)))
 	}
 	if c.Common.ConsoleStackInfo {
-		xcore.OpenConsoleStackInfo()
+		core.OpenConsoleStackInfo()
 	}
-	log := zap.New(xcore.NewCores(cores...), zap.AddCaller(), zap.AddCallerSkip(1))
+	log := zap.New(core.NewCores(cores...), zap.AddCaller(), zap.AddCallerSkip(1))
 	logger.sugar = log.Sugar()
 }
 
 func defaultXLogger() *zap.SugaredLogger {
-	xCore := zapcore.NewCore(xcore.DefaultConsoleEncoder(), zapcore.AddSync(os.Stdout), xcore.Level)
+	xCore := zapcore.NewCore(core.DefaultConsoleEncoder(), zapcore.AddSync(os.Stdout), core.Level)
 	log := zap.New(xCore, zap.AddCaller(), zap.AddCallerSkip(1))
 	return log.Sugar()
 }
 
-func (x *XLogger) init() {
+func (x *Logger) init() {
 	x.sugar = defaultXLogger()
 }
 
@@ -53,12 +53,12 @@ func SetNamed(name string) {
 	logger.sugar.Named(name)
 }
 
-func SetXLoggerLevel(level xcore.XLoggerLevel) {
-	xcore.TransformLevel(level)
+func SetXLoggerLevel(level core.LogLevel) {
+	core.TransformLevel(level)
 }
 
 func SetXLoggerLevelString(level string) {
-	xcore.TransformLevelString(level)
+	core.TransformLevelString(level)
 }
 
 func Info(args ...interface{}) {
@@ -107,9 +107,9 @@ func XError(err *xerr.XError) {
 	if logger.sugar == nil {
 		logger.init()
 	}
-	if xcore.GetConsoleStack() {
-		logger.sugar.Errorw(fmt.Sprintf("%+v", err.Err()), xcore.Stacktrace, fmt.Sprintf("%+v", err.Err()))
+	if core.GetConsoleStack() {
+		logger.sugar.Errorw(fmt.Sprintf("%+v", err.Err()), core.Stacktrace, fmt.Sprintf("%+v", err.Err()))
 		return
 	}
-	logger.sugar.Errorw(err.Err().Error(), xcore.Stacktrace, fmt.Sprintf("%+v", err.Err()))
+	logger.sugar.Errorw(err.Err().Error(), core.Stacktrace, fmt.Sprintf("%+v", err.Err()))
 }

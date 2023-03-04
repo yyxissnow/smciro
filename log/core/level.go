@@ -1,13 +1,13 @@
-package xcore
+package core
 
 import "go.uber.org/zap/zapcore"
 
-type XLoggerLevel int
+type LogLevel int
 
 var Level zapcore.Level
 
 const (
-	ErrorLevel XLoggerLevel = iota + 1
+	ErrorLevel LogLevel = iota + 1
 	WarnLevel
 	InfoLevel
 	DebugLevel
@@ -18,7 +18,7 @@ const (
 	DebugLevelSting  = "debug"
 )
 
-func TransformLevel(level XLoggerLevel) zapcore.Level {
+func TransformLevel(level LogLevel) zapcore.Level {
 	switch level {
 	case ErrorLevel:
 		Level = zapcore.ErrorLevel
