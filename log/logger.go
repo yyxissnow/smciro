@@ -1,4 +1,4 @@
-package logger
+package log
 
 import (
 	"fmt"
@@ -19,9 +19,9 @@ type Logger struct {
 	once  sync.Once
 }
 
-func NewXLogger(c *core.Config) {
+func NewLogger(c *core.Config) {
 	if c == nil || c.Common == nil {
-		logger.sugar = defaultXLogger()
+		logger.sugar = defaultLogger()
 		return
 	}
 	cores := make([]zapcore.Core, 0)
@@ -36,14 +36,14 @@ func NewXLogger(c *core.Config) {
 	logger.sugar = log.Sugar()
 }
 
-func defaultXLogger() *zap.SugaredLogger {
+func defaultLogger() *zap.SugaredLogger {
 	xCore := zapcore.NewCore(core.DefaultConsoleEncoder(), zapcore.AddSync(os.Stdout), core.Level)
 	log := zap.New(xCore, zap.AddCaller(), zap.AddCallerSkip(1))
 	return log.Sugar()
 }
 
 func (x *Logger) init() {
-	x.sugar = defaultXLogger()
+	x.sugar = defaultLogger()
 }
 
 func SetNamed(name string) {
