@@ -3,8 +3,9 @@ package xrpc
 import (
 	"log"
 	"net"
-	"smicro/xrpc/interceptor"
 	"time"
+
+	"smicro/xrpc/interceptor"
 
 	"google.golang.org/grpc"
 )
@@ -43,7 +44,7 @@ func (s *GrpcServer) RegisterService(register RegisterFunc) *GrpcServer {
 	if s.cfg.Timeout > 0 {
 		s.AddUnaryInterceptors(interceptor.UnaryTimeout(s.cfg.Timeout))
 	}
-	s.AddUnaryInterceptors(interceptor.UnaryCrash1, interceptor.UnaryCrash2)
+	s.AddUnaryInterceptors(interceptor.UnaryCrash)
 	options := append(s.options, interceptor.WithUnaryServer(s.unaryInterceptors...))
 	s.server = grpc.NewServer(options...)
 	return s

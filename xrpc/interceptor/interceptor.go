@@ -6,10 +6,11 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/yyxissnow/smicro/app/log/xlog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"smicro/log"
 )
 
 func WithUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.ServerOption {
@@ -42,18 +43,7 @@ func UnaryTimeout(timeout time.Duration) grpc.UnaryServerInterceptor {
 	}
 }
 
-func UnaryCrash1(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-	fmt.Println("crash1")
-	defer func() {
-		if r := recover(); r != nil {
-			err = toPanicError(r)
-		}
-	}()
-	return handler(ctx, req)
-}
-
-func UnaryCrash2(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-	fmt.Println("crash2")
+func UnaryCrash(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = toPanicError(r)
@@ -64,7 +54,7 @@ func UnaryCrash2(ctx context.Context, req interface{}, info *grpc.UnaryServerInf
 
 func toPanicError(r interface{}) error {
 	var buf [2 << 10]byte
-	xlog.Errorf("[server-panic] - %v - %s", r, string(buf[:runtime.Stack(buf[:], false)]))
+	log.Errorf("[server-panic] - %v - %s", r, string(buf[:runtime.Stack(buf[:], false)]))
 	return status.Errorf(codes.Internal, "panic: %v", r)
 }
 
